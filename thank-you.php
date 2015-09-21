@@ -124,9 +124,55 @@ ob_start();
             // If no input variables changed from our most recent lead in the database then just exit and do nothing
             if ($currentDate == $dbDate and $timeDifference <= 60 and $firstName == $dbFirstName and $middleName == $dbMiddleName and $lastName == $dbLastName and $homePhone == $dbHomePhone and $workPhone == $dbWorkPhone and $cellPhone == $dbCellPhone and $addressOne == $dbAddressOne and $addressTwo == $dbAddressTwo and $city == $dbCity and $state == $dbState and $zip == $dbZip) {
                 exit;
+            } else {
+                $duplicateRecord = TRUE;
+            }
+
+            if ($duplicateRecord) {
+                // Sets variables for duplicate record if records do not match
+                if ($firstName != $dbFirstName) {
+                    $dupFirstName == $dbFirstName;
+                }
+
+                if ($lastName != $dbLastName) {
+                    $dupLastName == $dbLastName;
+                }
+
+                if ($homePhone != $dbHomePhone) {
+                    $dupHomePhone == $dbHomePhone;
+                }
+
+                if ($workPhone != $dbWorkPhone) {
+                    $dupWorkPhone == $dbWorkPhone;
+                }
+
+                if ($cellPhone != $dbCellPhone) {
+                    $dupCellPhone == $dbCellPhone;
+                }
+
+                if ($addressOne != $dbAddressOne) {
+                    $dupAddressOne == $dbAddressOne;
+                }
+
+                if ($addressTwo != $dbAddressTwo) {
+                    $dupAddressTwo == $dbAddressTwo;
+                }
+
+                if ($city != $dbCity) {
+                    $dupWorkPhone == $dbCity;
+                }
+
+                if ($state != $dbState) {
+                    $dupState == $dbState;
+                }
+
+                if ($zip != $dbZip) {
+                    $dupZip == $dbZip;
+                }
             }
         }
 
+        /*
         // Check sent to trec global table
         // Execute a query that searches for emails existing in the database (duplicates)
         $query = "SELECT * FROM leads_sent_to_trecglobal WHERE email = '$email' ORDER BY date ASC, time ASC";
@@ -157,6 +203,8 @@ ob_start();
                 exit;
             }
         }
+         *
+         */
 
         /*
          * Database section
@@ -255,12 +303,18 @@ ob_start();
         $state = $database->dbPrepare($_POST["StateDropDownList"], "lower");
         $zip = $database->dbPrepare($_POST["ZipTextBox"]);
 
+        // Insert the lead to the normal leads table
+        $query = "INSERT INTO leads (mail_date, customer_number, date, time, source, source_type, mail_type, fico, store, dealer_id, first_name, middle_name, last_name, home_phone, work_phone, cell_phone, email, address_one, address_two, city, state, zip, comment, caller_id) VALUES ($mailDate, $customerNumber, $date, $time, $source, $sourceType, $mailType, $fico, $store, $dealerId, $firstName, $middleName, $lastName, $homePhone, $workPhone, $cellPhone, $email, $addressOne, $addressTwo, $city, $state, $zip, $comment, $callerId)";
+        $database->runQuery($query);
+
+        // Depricated
+        /*
         // Check if dealer has appointment hours
         $query = "SELECT dealer_id FROM dealer_appointment_hours WHERE dealer_id = $dealerId";
         $result = $database->runQuery($query);
 
         // If the dealer does NOT have appointment hours than parse the information to the database as normal
-        if (mysql_num_rows($result) == 0) {
+        if (1 === 1) {
             // Insert the lead to the normal leads table
             $query = "INSERT INTO leads (mail_date, customer_number, date, time, source, source_type, mail_type, fico, store, dealer_id, first_name, middle_name, last_name, home_phone, work_phone, cell_phone, email, address_one, address_two, city, state, zip, comment, caller_id) VALUES ($mailDate, $customerNumber, $date, $time, $source, $sourceType, $mailType, $fico, $store, $dealerId, $firstName, $middleName, $lastName, $homePhone, $workPhone, $cellPhone, $email, $addressOne, $addressTwo, $city, $state, $zip, $comment, $callerId)";
             $database->runQuery($query);
@@ -271,7 +325,8 @@ ob_start();
             $query = "INSERT INTO leads_sent_to_trecglobal (mail_date, customer_number, date, time, source, source_type, mail_type, fico, store, dealer_id, first_name, middle_name, last_name, home_phone, work_phone, cell_phone, email, address_one, address_two, city, state, zip, comment, caller_id) VALUES ($mailDate, $customerNumber, $date, $time, $source, $sourceType, $mailType, $fico, $store, $dealerId, $firstName, $middleName, $lastName, $homePhone, $workPhone, $cellPhone, $email, $addressOne, $addressTwo, $city, $state, $zip, $comment, $callerId)";
             $database->runQuery($query);
         }
-
+         *
+         */
 
 
         /*

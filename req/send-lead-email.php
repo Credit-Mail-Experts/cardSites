@@ -75,10 +75,10 @@ for ($j = 0; $j < count($textMessageAddresses); $j++) {
     mail($textMessageTo, $textMessageSubject, $newText, $textMessageHeader, $emailReturnAddress);
 }
 
-
-
+// Depricated 2015-09-18
+/*
 // Override the delivery address if it is a web lead that has a dealer with appointment hours
-/*if ($callerId == "Web Lead") {
+if ($callerId == "Web Lead") {
     $query = "SELECT dealer_id FROM dealer_appointment_hours WHERE dealer_id = $dealerId";
     $result = $database->runQuery($query);
 
@@ -89,7 +89,9 @@ for ($j = 0; $j < count($textMessageAddresses); $j++) {
         $deliveryAddress[] = "bjackson@jcgna.com, jackson@dezmondwright.com";
         $deliveryName[] = "Text Based Email";
     }
-}*/
+}
+ * 
+ */
 
 // Set the email from and header
 $emailFrom = "deliveryagent@creditmailexperts.com";
