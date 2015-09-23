@@ -130,44 +130,46 @@ ob_start();
 
             if ($duplicateRecord) {
                 // Sets variables for duplicate record if records do not match
+                $dupEmail = $email;
+
                 if ($firstName != $dbFirstName) {
-                    $dupFirstName == $dbFirstName;
+                    $dupFirstName = $firstName;
                 }
 
                 if ($lastName != $dbLastName) {
-                    $dupLastName == $dbLastName;
+                    $dupLastName = $lastName;
                 }
 
                 if ($homePhone != $dbHomePhone) {
-                    $dupHomePhone == $dbHomePhone;
+                    $dupHomePhone = $homePhone;
                 }
 
                 if ($workPhone != $dbWorkPhone) {
-                    $dupWorkPhone == $dbWorkPhone;
+                    $dupWorkPhone = $workPhone;
                 }
 
                 if ($cellPhone != $dbCellPhone) {
-                    $dupCellPhone == $dbCellPhone;
+                    $dupCellPhone = $cellPhone;
                 }
 
                 if ($addressOne != $dbAddressOne) {
-                    $dupAddressOne == $dbAddressOne;
+                    $dupAddressOne = $addressOne;
                 }
 
                 if ($addressTwo != $dbAddressTwo) {
-                    $dupAddressTwo == $dbAddressTwo;
+                    $dupAddressTwo = $addressTwo;
                 }
 
                 if ($city != $dbCity) {
-                    $dupWorkPhone == $dbCity;
+                    $dupCity = $city;
                 }
 
                 if ($state != $dbState) {
-                    $dupState == $dbState;
+                    $dupState = $state;
                 }
 
                 if ($zip != $dbZip) {
-                    $dupZip == $dbZip;
+                    $dupZip = $zip;
                 }
             }
         }
