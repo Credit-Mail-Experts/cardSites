@@ -6,10 +6,11 @@ ob_start();
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>DriveNow Card - Activate Your Card Today</title>
 
         <?php
         require "req/head.php";
+
+        echo $site->html->title;
 
         // if the customer number didn't match anything in the database
         if (isset($_GET["customerNumber"])) {

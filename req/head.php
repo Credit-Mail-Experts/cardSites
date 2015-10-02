@@ -1,6 +1,12 @@
 <?php
 require "req/variables.php";
 require "req/functions.php";
+require "sites/router.php";
+
+$domain = $_SERVER['SERVER_NAME'];
+
+$router = new Router();
+$site = $router->getSite($domain);
 
 // parse the ini file into an array
 $ini = parse_ini_file("req/settings.ini");
@@ -29,7 +35,7 @@ if (isset($_SESSION["employeeId"])) {
 ?>
 
 <!-- style sheet externals -->
-<link href="css/main.css?reload" media="all" type="text/css" rel="stylesheet"/>
+<?php echo $site->html->css; ?>
 <link href="css/jquery-ui.min.css" media="all" type="text/css" rel="stylesheet"/>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
