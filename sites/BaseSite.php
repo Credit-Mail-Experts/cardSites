@@ -22,6 +22,16 @@ class BaseSite {
             return "<link href='" . $site->cssFile . "' media='all' type='text/css' rel='stylesheet' />";
         });
 
+        // creates HTML a tag for website on privacy statement
+        $this->createHTMLelement('privacySiteAnchor' , function($site) {
+            return "<a href='" . $site->fullURL . "'>" . $site->fullURL . "</a>";
+        });
+
+        // creates HTML a tag for email on privacy statement
+        $this->createHTMLelement('privacyEmailAnchor' , function($site) {
+            return "<a href='mailto: " . $site->privacyEmail . "'>" . $site->privacyEmail . "</a>";
+        });
+
         $this->compileElementObject();
     }
 

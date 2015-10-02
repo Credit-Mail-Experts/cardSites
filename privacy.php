@@ -20,7 +20,9 @@ ob_start();
             <section id="privacy">
                 <h1>PRIVACY NOTICE EFFECTIVE 05/01/2015</h1>
                 <p>
-                    This Privacy Notice explains our data collection and privacy practices for users of all the pages of our websites, <a href='www.apcardonline.com'>www.apcardonline.com</a> or <a href='www.drivenowcard.com'>www.drivenowcardonline.com</a>. If you do not agree to these practices, please do not continue to use this site. Your continued use of this site constitutes your agreement to the following terms. This Privacy Notice applies to those pages of our site that are available to the general public and/or entering a code or other number to access.
+                    This Privacy Notice explains our data collection and privacy practices for users of all the pages of our website,
+                    <?php echo $site->html->privacySiteAnchor ?>
+                    . If you do not agree to these practices, please do not continue to use this site. Your continued use of this site constitutes your agreement to the following terms. This Privacy Notice applies to those pages of our site that are available to the general public and/or entering a code or other number to access.
                 </p>
                 <p>
                     By submitting your information you agree to this statement:<br>
@@ -28,7 +30,9 @@ ob_start();
                 </p>
 
                 <p>
-                    In connection with your transaction, <a href='www.apcardonline.com'>www.apcardonline.com</a> or <a href='www.drivenowcard.com'>www.drivenowcardonline.com</a> may obtain information about you, that you have provided or has been obtained by various sources.
+                    In connection with your transaction,
+                    <?php echo $site->html->privacySiteAnchor ?>
+                    may obtain information about you, that you have provided or has been obtained by various sources.
                 </p>
 
                 <p>We may collect the following nonpublic personal information about you:</p>
@@ -38,7 +42,9 @@ ob_start();
                         information we receive from you on applications or other forms, such as your name, address, email address, home telephone number, work telephone number , mobile/cellular number social security number, income, and obligations;
                     </li>
                     <li>
-                        information about your transaction with us or others, such as the products that you have purchased, financed, or leased with or through APCardOnline.com or DriveNowCard.com; and
+                        information about your transaction with us or others, such as the products that you have purchased, financed, or leased with or through
+                        <?php echo $site->html->privacySiteAnchor ?>
+                        ; and
                     </li>
                     <li>
                         information we receive from a consumer-reporting agency, such as your creditworthiness and credit history.
@@ -83,7 +89,9 @@ ob_start();
                         We may periodically change the terms of this Privacy Notice. When we do so, we will post the revised date at the top of the page in the same manner as the date appears here. You should check here for changes in our practices when you visit our site.
                     </p>
                     <p>
-                        If you have questions about our data collection, sharing, and privacy practices, please send us an email at <a href='mailto: privacy@apcardonline.com'>privacy@apcardonline.com</a>.
+                        If you have questions about our data collection, sharing, and privacy practices, please send us an email at
+                        <?php echo $site->html->privacyEmailAnchor ?>
+                        .
                     </p>
             </section>
             <br />

@@ -4,5 +4,6 @@ class DriveJDBSite extends BaseSite {
     public $cssFile = "css/drivejdb.css";
     public $domain = "drivejdb.com";
     public $title = "DriveJDB";
+    public $fullURL = "www.DriveJDB.com";
 }
 ?>
