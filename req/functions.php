@@ -13,6 +13,46 @@ class database {
         $this->database = $database;
     }
 
+    public function query($queryString) {
+        $connection = new mysqli($this->host, $this->username, $this->password, $this->database);
+
+        if($connection->connect_errno > 0) {
+            die('Unable to connect with Mysql database...');
+        }
+
+
+        $result = $connection->query($queryString);
+
+        $this->lastInsertId = $connection->insert_id;
+        
+        if(!$result) {
+            return false;
+        }elseif($result === true) {
+            return true;
+        }
+        
+        while($row = $result->fetch_assoc()){
+            $return[] = $row;
+        }
+        
+        if(count(@$return) === 1) {
+            $obj = new stdClass();
+            foreach($return[0] as $key => $value) {
+                $obj->$key = $value;  
+            }
+            return $obj;
+        }elseif(sizeof(@$return) >= 2){
+            foreach($return as $row) {
+                $obj = new stdClass();
+                foreach($row as $key => $value) {
+                    $obj->$key = $value;
+                }
+                $returnRows[] = $obj;
+            }
+            return $returnRows;
+        }
+    }
+
     public function runQuery($query) {
         $connection = mysql_connect($this->host, $this->username, $this->password);
 
