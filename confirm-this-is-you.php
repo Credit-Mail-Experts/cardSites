@@ -6,7 +6,7 @@ ob_start();
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>DriveNow Card - Confirm This Is You</title>
+        <title>Confirm This Is You</title>
 
         <?php
         require "req/head.php";

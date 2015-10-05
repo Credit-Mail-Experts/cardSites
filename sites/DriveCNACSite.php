@@ -5,6 +5,8 @@ class DriveCNACSite extends BaseSite {
     public $domain = "drivecnac.com";
     public $title = "DriveCNAC";
     public $fullURL = "www.DriveCNAC.com";
+    public $privacyEmail = "privacy@DriveCNAC.com";
+    public $fullURLLowerCase = "www.drivecnac.com";
 
 }
 ?>

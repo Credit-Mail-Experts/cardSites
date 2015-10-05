@@ -158,7 +158,7 @@ ob_start();
                 exit;
             }
         }
-         * 
+         *
          */
 
         /*
@@ -238,7 +238,7 @@ ob_start();
         $date = $database->dbPrepare(date("Y-m-d"));
         $time = $database->dbPrepare(date("H:i:s"));
         $source = $database->dbPrepare("Web");
-        $sourceType = $database->dbPrepare("drivenowcard.com");
+        $sourceType = $database->dbPrepare($site->domain);
         // new addition 11-26-14 by billy
         $callerId = "Web Lead";
 
@@ -261,7 +261,7 @@ ob_start();
         // Insert the lead to the normal leads table
         $query = "INSERT INTO leads (mail_date, customer_number, date, time, source, source_type, mail_type, fico, store, dealer_id, first_name, middle_name, last_name, home_phone, work_phone, cell_phone, email, address_one, address_two, city, state, zip, comment, caller_id) VALUES ($mailDate, $customerNumber, $date, $time, $source, $sourceType, $mailType, $fico, $store, $dealerId, $firstName, $middleName, $lastName, $homePhone, $workPhone, $cellPhone, $email, $addressOne, $addressTwo, $city, $state, $zip, $comment, $callerId)";
         $database->runQuery($query);
-        
+
         // Depricated
         /*
         // Check if dealer has appointment hours
@@ -280,9 +280,9 @@ ob_start();
             $query = "INSERT INTO leads_sent_to_trecglobal (mail_date, customer_number, date, time, source, source_type, mail_type, fico, store, dealer_id, first_name, middle_name, last_name, home_phone, work_phone, cell_phone, email, address_one, address_two, city, state, zip, comment, caller_id) VALUES ($mailDate, $customerNumber, $date, $time, $source, $sourceType, $mailType, $fico, $store, $dealerId, $firstName, $middleName, $lastName, $homePhone, $workPhone, $cellPhone, $email, $addressOne, $addressTwo, $city, $state, $zip, $comment, $callerId)";
             $database->runQuery($query);
         }
-         * 
+         *
          */
-        
+
 
         /*
          * Email section
@@ -317,7 +317,7 @@ ob_start();
         $sourceType = stripQuotes($sourceType);
 
         // Set advertising source
-        $advertisingSource = "www.drivenowcard.com";
+        $advertisingSource = $site->fullURLLowerCase;
 
         if ($customerNumber != "000000") {
 

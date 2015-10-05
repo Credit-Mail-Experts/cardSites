@@ -9,7 +9,7 @@ ob_start();
         <title>Call Center - Employee Login</title>
 
         <?php
-        require "req/head.php";
+        require "req/call-center-head.php";
 
         // if the customer number didn't match anything in the database
         if (isset($_GET["customerNumber"])) {
@@ -35,7 +35,7 @@ ob_start();
                 if ($_POST) {
                     $employeeId = mysql_real_escape_string($_POST["EmployeeIdTextBox"]);
                     $password = mysql_real_escape_string($_POST["PasswordTextBox"]);
-                    $query = "SELECT password FROM employees WHERE employee_id = '$employeeId'";
+                    $query = "SELECT password FROM logins WHERE login_id = '$employeeId' and type='call-center'";
                     $result = $database->runQuery($query);
 
                     while ($row = mysql_fetch_array($result)) {

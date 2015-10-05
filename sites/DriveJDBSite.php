@@ -5,5 +5,7 @@ class DriveJDBSite extends BaseSite {
     public $domain = "drivejdb.com";
     public $title = "DriveJDB";
     public $fullURL = "www.DriveJDB.com";
+    public $privacyEmail = "privacy@DriveJDB.com";
+    public $fullURLLowerCase = "www.drivejdb.com";
 }
 ?>

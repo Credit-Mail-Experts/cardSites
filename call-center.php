@@ -9,7 +9,7 @@ ob_start();
         <title>Call Center - Main Page</title>
 
         <?php
-        require "req/head.php";
+        require "req/call-center-head.php";
 
         if (!isset($employeeId)) {
             header('Location: call-center-login.php');
@@ -44,7 +44,7 @@ ob_start();
                     <input id="customer-number" name="CustomerNumberTextBox" maxlength="7"/>
                     <input id="continue" name="ContinueButton" type="submit" value="" />
                 </form>
-            </section>    
+            </section>
         </div>
         <?php require "req/footer.php"; ?>
     </body>

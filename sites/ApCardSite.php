@@ -6,6 +6,7 @@ class ApCardSite extends BaseSite {
     public $title = "Automotive Platinum - Auto Finance Solutions";
     public $fullURL = "www.ApCardOnline.com";
     public $privacyEmail = "privacy@ApCardOnline.com";
+    public $fullURLLowerCase = "www.apcardonline.com";
 
 }
 ?>

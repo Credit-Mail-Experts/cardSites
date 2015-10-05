@@ -9,12 +9,15 @@ ob_start();
         <title>Call Center - Form</title>
 
         <?php
-        require "req/head.php";
+        require "req/call-center-head.php";
 
         // Make sure an employee is actually logged in, if not send them to the login page
         if (!isset($employeeId)) {
             header('Location: call-center-login.php');
         }
+
+        $acl->tag('Site:CallCenter@Form');
+
         ?>
 
         <!-- script to validate the form on this page -->
@@ -25,7 +28,7 @@ ob_start();
         <?php
         // If we've looked a customer up
         if (isset($_POST["CustomerNumberEditableTextBox"]) && strlen($_POST["CustomerNumberEditableTextBox"] > 0)) {
-            
+
 
             // Boolean for logic on the form
             $pagePosted = true;
@@ -46,7 +49,7 @@ ob_start();
 
             // Array of search characters to replace in the phone number pulled from database
             $phoneCharactersToReplace = array("(", "-", ")");
-            
+
             while ($row = mysql_fetch_array($result)) {
                 $firstName = upcfirst($row["first_name"]);
                 $middleName = upcfirst($row["middle_name"]);
@@ -61,24 +64,25 @@ ob_start();
                 // dealer id added for the appointment addition
                 $dealerId = $row["dealer_id"];
             }
-            
+
             // If the page posted grab the information that we need for the dealer information form
-            $query = "SELECT first_name, last_name, dealership_name, phone, street_address, city, state, zip FROM dealer_contacts WHERE dealer_id = '$dealerId'";
+            $query = "SELECT first_name, last_name, dealership_name, phone, street_address, city, state, zip, location_info FROM dealer_contacts WHERE dealer_id = '$dealerId'";
             $result = $database->runQuery($query);
 
             while ($row = mysql_fetch_array($result)) {
-                $dealerFirstName = upcfirst($row["first_name"]);
-                $dealerLastName = upcfirst($row["last_name"]);
-                $dealerName = upcfirst($row["dealership_name"]);
+                $dealerFirstName = upcfirst(strtolower($row["first_name"]));
+                $dealerLastName = upcfirst(strtolower($row["last_name"]));
+                $dealerName = upcwords(strtolower($row["dealership_name"]));
                 $dealerPhone = upcfirst($row["phone"]);
-                $dealerStreetAddress = upcfirst($row["street_address"]);
-                $dealerCity = upcfirst($row["city"]);
+                $dealerStreetAddress = upcwords(strtolower($row["street_address"]));
+                $dealerCity = upcwords(strtolower($row["city"]));
                 $dealerState = upcfirst($row["state"]);
                 $dealerZip = upcfirst($row["zip"]);
+                $dealerLocationInfo = $row["location_info"];
             }
-            
-            
-            
+
+
+
             // If a customer number exists in the get variable do the following
             // We use the customerNumber get variable if the customer number is not found when we search it
         } else if (isset($_GET["customerNumber"])) {
@@ -107,6 +111,22 @@ ob_start();
         // Check to see if the parse page returned a duplicate lead error
         if (isset($_GET["duplicate"])) {
             $duplicateLead = $_GET["duplicate"];
+        }
+
+        // Grab warm transfer information for dealer
+        $query = "SELECT * FROM warm_transfers_information WHERE dealer_id = '$dealerId'";
+        $result = $database->runQuery($query);
+
+        // If the dealer does not take warm transfers set a boolean to false continue
+        if (mysql_num_rows($result) == 0) {
+            $doesNotTakeWarmTransfers = true;
+
+            // If the dealer does take warm transfers then grab all of our information
+        } else {
+            while ($row = mysql_fetch_array($result)) {
+                $warmTransferPhone = $row["phone"];
+                $warmTransferSecondaryPhone = $row["secondary_phone"];
+            }
         }
 
         // Grab the days of the week that the dealer takes appointments (if any)
@@ -190,7 +210,7 @@ ob_start();
 
             // Grab the start and end times for each day of the week the dealer takes appointments and assign them to arrays
             foreach ($appointmentDaysOfTheWeek as $value) {
-                $query = "SELECT start_time, end_time FROM dealer_appointment_hours WHERE dealer_id = '2869' AND day = '$value'";
+                $query = "SELECT start_time, end_time FROM dealer_appointment_hours WHERE dealer_id = '$dealerId' AND day = '$value'";
                 $result = $database->runQuery($query);
 
                 while ($row = mysql_fetch_array($result)) {
@@ -242,6 +262,102 @@ ob_start();
                 $upper = $appointmentEndTimes["sunday"];
                 $sundayAppointmentTimes = getIncrementedTimes(strtotime("1970-01-01 $lower UTC"), strtotime("1970-01-01 $upper UTC"), 1800);
             }
+        }
+
+
+        /*
+         * Grab the hours for the dealer warm transfers table if they exist
+         */
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'monday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $mondayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $mondayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $mondayWarmTransferOpen = "N/A";
+            $mondayWarmTransferClose = "N/A";
+        }
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'tuesday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $tuesdayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $tuesdayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $tuesdayWarmTransferOpen = "N/A";
+            $tuesdayWarmTransferClose = "N/A";
+        }
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'wednesday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $wednesdayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $wednesdayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $wednesdayWarmTransferOpen = "N/A";
+            $wednesdayWarmTransferClose = "N/A";
+        }
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'thursday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $thursdayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $thursdayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $thursdayWarmTransferOpen = "N/A";
+            $thursdayWarmTransferClose = "N/A";
+        }
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'friday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $fridayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $fridayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $fridayWarmTransferOpen = "N/A";
+            $fridayWarmTransferClose = "N/A";
+        }
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'saturday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $saturdayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $saturdayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $saturdayWarmTransferOpen = "N/A";
+            $saturdayWarmTransferClose = "N/A";
+        }
+
+        $query = "SELECT start_time, end_time FROM warm_transfers WHERE dealer_id = '$dealerId' AND day = 'sunday'";
+        $result = $database->runQuery($query);
+
+        if (mysql_num_rows($result) > 0) {
+            while ($row = mysql_fetch_array($result)) {
+                $sundayWarmTransferOpen = date('h:i a', strtotime(upcfirst($row["start_time"])));
+                $sundayWarmTransferClose = date('h:i a', strtotime(upcfirst($row["end_time"])));
+            }
+        } else {
+            $sundayWarmTransferOpen = "N/A";
+            $sundayWarmTransferClose = "N/A";
         }
 
 
@@ -345,7 +461,7 @@ ob_start();
             /*
              * Code to create a jquery calendar using a php array as an input
              */
-           
+
             var availableDates = [<?php echo $appointmentDaysCSV; ?>];
 
             function available(date) {
@@ -362,7 +478,7 @@ ob_start();
             $(function() {
                 $("#AppointmentDatePicker").datepicker({ beforeShowDay: available, dateFormat: "yy-mm-dd" });
             });
-            
+
         </script>
 
         <?php require "req/header.php"; ?>
@@ -384,7 +500,7 @@ ob_start();
                     </fieldset>
                 </form>
 
-                <div class="<?php if (isset($doesNotTakeAppointments)) echo "hide"; ?>">
+                <div class="<?php if (isset($doesNotTakeAppointments) && isset($doesNotTakeWarmTransfers)) echo "hide"; ?>">
                     <br /><br />
                     <fieldset>
                         <legend>Dealer Information</legend>
@@ -392,15 +508,84 @@ ob_start();
                         echo "<p>Dealership Name: $dealerName</p>";
                         echo "<p>Contact Name: $dealerFirstName $dealerLastName</p>";
                         echo "<p>Address: $dealerStreetAddress, $dealerCity, $dealerState $dealerZip</p>";
-                        echo "<p>Phone: $dealerPhone</p>";
 
+                        // Does not show dealer phone number if the dealership does not take appointments
+                        if (!isset($doesNotTakeAppointments)) {
+                            echo "<p>Phone: $dealerPhone</p>";
+                        }
+
+                        if (isset($dealerLocationInfo)) {
+                            echo "<p>Location Info: $dealerLocationInfo</p>";
+                        }
+
+                        // Table for dealer warm transfer hours
+                        if (isset($doesNotTakeWarmTransfers) || !isset($doesNotTakeAppointments)) {
+                            echo "<div class='hide'>";
+                        }
+
+                        echo "<p>Warm Transfer Phone: $warmTransferPhone</p>";
+
+                        // Checks if there is a secondary warm transfer phone number
+                        if ($warmTransferSecondaryPhone != "") {
+                            echo "<p>Warm Transfer Secondary Phone: $warmTransferSecondaryPhone</p>";
+                        }
+
+                        echo "<table>";
+                        echo "<caption>Warm Transfer Hours</caption>";
+                        echo "<tr>";
+                        echo "<th>Day</th>";
+                        echo "<th>Open</th>";
+                        echo "<th>Close</th>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Monday</td>";
+                        echo "<td>$mondayWarmTransferOpen</td>";
+                        echo "<td>$mondayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Tuesday</td>";
+                        echo "<td>$tuesdayWarmTransferOpen</td>";
+                        echo "<td>$tuesdayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Wednesday</td>";
+                        echo "<td>$wednesdayWarmTransferOpen</td>";
+                        echo "<td>$wednesdayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Thursday</td>";
+                        echo "<td>$thursdayWarmTransferOpen</td>";
+                        echo "<td>$thursdayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Friday</td>";
+                        echo "<td>$fridayWarmTransferOpen</td>";
+                        echo "<td>$fridayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Saturday</td>";
+                        echo "<td>$saturdayWarmTransferOpen</td>";
+                        echo "<td>$saturdayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>Sunday</td>";
+                        echo "<td>$sundayWarmTransferOpen</td>";
+                        echo "<td>$sundayWarmTransferClose</td>";
+                        echo "</tr>";
+                        echo "</table>";
+
+                        if (isset($doesNotTakeWarmTransfers) || !isset($doesNotTakeAppointments)) {
+                            echo "</div>";
+                        }
+
+                        // Table for dealer appointment hours
                         if (isset($doesNotTakeAppointments)) {
                             echo "<div class='hide'>";
                         }
 
 
                         echo "<table>";
-                        echo "<caption>Store Hours</caption>";
+                        echo "<caption>Appointment Hours</caption>";
                         echo "<tr>";
                         echo "<th>Day</th>";
                         echo "<th>Open</th>";
@@ -466,19 +651,19 @@ ob_start();
                             <span id="MiddleNameError" class="hide"></span>
                             <label for="LastNameTextBox">Last Name:*</label><input type="text" id="LastNameTextBox" name="LastNameTextBox" maxlength="64" value="<?php if (isset($lastName)) echo $lastName ?>" <?php if (isset($customerNumberNotFound)) echo "disabled" ?>/><br/>
                             <span id="LastNameError" class="hide"></span>
-                            
+
                             <label for="CallerIdTextBox">Caller ID:</label><input type="text" id="CallerIdTextBox" name="CallerIdTextBox" maxlength="10" value=""  <?php if (isset($customerNumberNotFound)) echo "disabled" ?>/><br/>
-                            <span id="CallerIdError" class="hide"></span>                       
-                            
+                            <span id="CallerIdError" class="hide"></span>
+
                             <label for="HomePhoneTextBox">Home Phone:</label><input type="text" id="HomePhoneTextBox" name="HomePhoneTextBox" maxlength="10" value="<?php if (isset($homePhone)) echo $homePhone ?>"  <?php if (isset($customerNumberNotFound)) echo "disabled" ?>/><br/>
                             <span id="HomePhoneError" class="hide"></span>
-                            
+
                             <label for="WorkPhoneTextBox">Work Phone:</label><input type="text" id="WorkPhoneTextBox" name="WorkPhoneTextBox" maxlength="10" value=""  <?php if (isset($customerNumberNotFound)) echo "disabled" ?>/><br/>
                             <span id="WorkPhoneError" class="hide"></span>
-                            
+
                             <label for="CellPhoneTextBox">Cell Phone:</label><input type="text" id="CellPhoneTextBox" name="CellPhoneTextBox" maxlength="10" value=""  <?php if (isset($customerNumberNotFound)) echo "disabled" ?>/><br/>
                             <span id="CellPhoneError" class="hide"></span>
-                            
+
                             <span id="PhonesError" class="hide"></span>
 
                             <p>Appointment Section</p>
@@ -486,7 +671,7 @@ ob_start();
                             <label for="AppointmentDatePicker">Date:</label><input type="text" id="AppointmentDatePicker" name="AppointmentDatePicker" maxlength="10" <?php if (isset($doesNotTakeAppointments)) echo "disabled" ?> /><br/>
                             <span id="AppointmentDatePicker" class="hide"></span>
 
-                            <div id="MondayTime" class="hide">    
+                            <div id="MondayTime" class="hide">
                                 <label for="MondayAppointmentTimeDropDownList">Time:</label>
                                 <select id="MondayAppointmentTimeDropDownList" name="MondayAppointmentTimeDropDownList">
                                     <?php
@@ -496,7 +681,7 @@ ob_start();
                                     ?>
                                 </select><br />
                             </div>
-                            <div id="TuesdayTime" class="hide"> 
+                            <div id="TuesdayTime" class="hide">
                                 <label for="TuesdayAppointmentTimeDropDownList">Time:</label>
                                 <select id="TuesdayAppointmentTimeDropDownList" name="TuesdayAppointmentTimeDropDownList">
                                     <?php
@@ -506,7 +691,7 @@ ob_start();
                                     ?>
                                 </select><br />
                             </div>
-                            <div id="WednesdayTime" class="hide"> 
+                            <div id="WednesdayTime" class="hide">
                                 <label for="WednesdayAppointmentTimeDropDownList">Time:</label>
                                 <select id="WednesdayAppointmentTimeDropDownList" name="WednesdayAppointmentTimeDropDownList">
                                     <?php
@@ -516,7 +701,7 @@ ob_start();
                                     ?>
                                 </select><br />
                             </div>
-                            <div id="ThursdayTime" class="hide"> 
+                            <div id="ThursdayTime" class="hide">
                                 <label for="ThursdayAppointmentTimeDropDownList">Time:</label>
                                 <select id="ThursdayAppointmentTimeDropDownList" name="ThursdayAppointmentTimeDropDownList">
                                     <?php
@@ -526,7 +711,7 @@ ob_start();
                                     ?>
                                 </select><br />
                             </div>
-                            <div id="FridayTime" class="hide"> 
+                            <div id="FridayTime" class="hide">
                                 <label for="FridayAppointmentTimeDropDownList">Time:</label>
                                 <select id="FridayAppointmentTimeDropDownList" name="FridayAppointmentTimeDropDownList">
                                     <?php
@@ -536,7 +721,7 @@ ob_start();
                                     ?>
                                 </select><br />
                             </div>
-                            <div id="SaturdayTime" class="hide"> 
+                            <div id="SaturdayTime" class="hide">
                                 <label for="SaturdayAppointmentTimeDropDownList">Time:</label>
                                 <select id="SaturdayAppointmentTimeDropDownList" name="SaturdayAppointmentTimeDropDownList">
                                     <?php
@@ -546,7 +731,7 @@ ob_start();
                                     ?>
                                 </select><br />
                             </div>
-                            <div id="SundayTime" class="hide"> 
+                            <div id="SundayTime" class="hide">
                                 <label for="SundayAppointmentTimeDropDownList">Time:</label>
                                 <select id="SundayAppointmentTimeDropDownList" name="SundayAppointmentTimeDropDownList">
                                     <?php
@@ -591,25 +776,43 @@ ob_start();
                                 }
                                 ?>
                             </select><br />
-                            <label for="SourceDropDownList">Source:*</label>
-                            <select id="SourceDropDownList" name="SourceDropDownList" <?php if (isset($customerNumberNotFound)) echo "disabled" ?>>
-                                <?php
-                                foreach ($callCenterSources as $key => $value) {
-                                    echo "<option value='$key'>$value</option>";
-                                }
-                                ?>
-                            </select><br />
+
+                            <!-- Only show source dropdown when group is set to admin -->
+                            <?php if($_SESSION['employeeId'] == "CallCenter") { ?>
+                                <label for="SourceDropDownList">Source:*</label>
+                                <select id="SourceDropDownList" name="SourceDropDownList" <?php if (isset($customerNumberNotFound)) echo "disabled" ?>>
+                                    <?php
+                                    foreach ($callCenterSources as $key => $value) {
+                                        echo "<option value='$key'>$value</option>";
+                                    }
+                                    ?>
+                                </select><br />
+                            <?php } ?>
+
                             <label for="CommentTextArea">Comment:</label>
                             <textarea id="CommentTextArea" name="CommentTextArea" maxlength="255" <?php if (isset($customerNumberNotFound)) echo "disabled" ?>></textarea><br />
                             <br />
                         </div>
-                        <input type="submit" id="submit" value="">
+                        <input onclick="" type="submit" id="submit" value="">
                     </fieldset>
                 </form>
             </section>
         </div>
-        
+
 
         <?php require "req/footer.php"; ?>
     </body>
 </html>
+
+<script>
+$('#CustomerInformationForm').submit(function(e) {
+	var result = confirm("Are you sure you want to submit this lead?");
+
+	if(result == true) {
+		return true;
+	}else{
+		e.preventDefault();
+		return false;
+	}
+});
+</script>

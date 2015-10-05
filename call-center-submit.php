@@ -9,12 +9,14 @@ ob_start();
         <title>Call Center - Submission Successful</title>
 
         <?php
-        require "req/head.php";
+        require "req/call-center-head.php";
+
+        $acl->tag('Site:CallCenter@Submit');
         ?>
     </head>
 
     <body>
-        <?php require "req/header.php"; ?> 
+        <?php require "req/header.php"; ?>
 
         <div id="content">
             <section id="thank-you">
@@ -40,7 +42,7 @@ ob_start();
             exit;
         }
 
-        // grab variables that will be used to cross reference for duplicates  	
+        // grab variables that will be used to cross reference for duplicates
         $firstName = upcfirst($_POST["FirstNameTextBox"]);
         $middleName = upcfirst($_POST["MiddleNameTextBox"]);
         $lastName = upcfirst($_POST["LastNameTextBox"]);
@@ -57,25 +59,25 @@ ob_start();
         $source = "Call Center";
 
         // convert the chunk's of phone number into one fluid number in the format (xxx)xxx-xxxx (ADF XML FORMAT)
-        
+
         if(!empty($callerId)) {
             $callerId = "(" . substr($callerId, 0, 3) . ")" . substr($callerId, 3, 3) . "-" . substr($callerId, -4);
         } else {
             $callerId = NULL;
         }
-        
+
         if (!empty($homePhone)) {
             $homePhone = "(" . substr($homePhone, 0, 3) . ")" . substr($homePhone, 3, 3) . "-" . substr($homePhone, -4);
         } else {
             $homePhone = NULL;
         }
-        
+
         if (!empty($workPhone)) {
             $workPhone = "(" . substr($workPhone, 0, 3) . ")" . substr($workPhone, 3, 3) . "-" . substr($workPhone, -4);
         } else {
             $workPhone = NULL;
         }
-        
+
         if (!empty($cellPhone)) {
             $cellPhone = "(" . substr($cellPhone, 0, 3) . ")" . substr($cellPhone, 3, 3) . "-" . substr($cellPhone, -4);
         } else {
@@ -151,19 +153,26 @@ ob_start();
             }
         }
 
-        switch ($_POST["SourceDropDownList"]) {
-            case "Call Center":
-                $sourceType = "ITM Outbound";
-                break;
-            case "Toll-Free":
-                $sourceType = "ITM Inbound";
-                break;
-            case "Web":
-                $sourceType = "apcardonline.com";
-                break;
-            default:
-                $sourceType = "";
-                break;
+        // if the acl group is admin
+        if ($_SESSION['employeeId'] == "CallCenter") {
+
+            switch ($_POST["SourceDropDownList"]) {
+                case "Call Center":
+                    $sourceType = "Outbound";
+                    break;
+                case "Toll-Free":
+                    $sourceType = "ITM Inbound";
+                    break;
+                case "Web":
+                    $sourceType = "apcardonline.com";
+                    break;
+                default:
+                    $sourceType = "";
+                    break;
+            }
+        } else {
+            $sourceType = "Edge Inbound";
+            $source = "Call Center";
         }
 
         // predetermined variables
@@ -171,8 +180,8 @@ ob_start();
         $time = $database->dbPrepare(date("H:i:s"));
         //$source = $database->dbPrepare("Call Center");
         //$sourceType = $database->dbPrepare("ITM Outbound");
-        
-        
+
+
         // variables from the form on the previous page
         $customerNumber = $database->dbPrepare($customerNumber);
         $firstName = $database->dbPrepare($_POST["FirstNameTextBox"], "ucfirst");

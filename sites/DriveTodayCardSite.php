@@ -5,6 +5,8 @@ class DriveTodayCardSite extends BaseSite {
     public $domain = "drivetodaycard.com";
     public $title = "Drive Today Card";
     public $fullURL = "www.DriveTodayCard.com";
+    public $privacyEmail = "privacy@DriveTodayCard.com";
+    public $fullURLLowerCase = "www.drivetodaycard.com";
 
 }
 ?>
