@@ -2,26 +2,26 @@ RewriteEngine On
 RewriteCond %{SERVER_PORT} 80
 
 #rewrite rule for drivenowcard
-RewriteCond %{HTTP_HOST} ^development.creditmailexperts.com$ [OR]
-RewriteCond %{HTTP_HOST} ^drivenowcard.com$
-RewriteRule ^(.*)$ https://www.drivenowcard.com/$1 [R,L]
+#RewriteCond %{HTTP_HOST} ^development.creditmailexperts.com$ [OR]
+#RewriteCond %{HTTP_HOST} ^drivenowcard.com$
+#RewriteRule ^(.*)$ https://www.drivenowcard.com/$1 [R,L]
 
 #rewrite rule for apcardonline
-RewriteCond %{HTTP_HOST} ^www.apcardonline.com$ [OR]
-RewriteCond %{HTTP_HOST} ^apcardonline.com$
-RewriteRule ^(.*)$ https://www.apcardonline.com/$1 [R,L]
+#RewriteCond %{HTTP_HOST} ^www.apcardonline.com$ [OR]
+#RewriteCond %{HTTP_HOST} ^apcardonline.com$
+#RewriteRule ^(.*)$ https://www.apcardonline.com/$1 [R,L]
 
 #rewrite rule for drivecnac
-RewriteCond %{HTTP_HOST} ^www.drivecnac.com$ [OR]
-RewriteCond %{HTTP_HOST} ^drivecnac.com$
-RewriteRule ^(.*)$ https://www.drivecnac.com/$1 [R,L]
+#RewriteCond %{HTTP_HOST} ^www.drivecnac.com$ [OR]
+#RewriteCond %{HTTP_HOST} ^drivecnac.com$
+#RewriteRule ^(.*)$ https://www.drivecnac.com/$1 [R,L]
 
 #rewrite rule for drivejdb
-RewriteCond %{HTTP_HOST} ^www.drivejdb.com$ [OR]
-RewriteCond %{HTTP_HOST} ^drivejdb.com$
-RewriteRule ^(.*)$ https://www.drivejdb.com/$1 [R,L]
+#RewriteCond %{HTTP_HOST} ^www.drivejdb.com$ [OR]
+#RewriteCond %{HTTP_HOST} ^drivejdb.com$
+#RewriteRule ^(.*)$ https://www.drivejdb.com/$1 [R,L]
 
 #rewrite rule for drivetodaycard
-RewriteCond %{HTTP_HOST} ^www.drivetodaycard.com$ [OR]
-RewriteCond %{HTTP_HOST} ^drivetodaycard.com$
-RewriteRule ^(.*)$ https://www.drivetodaycard.com/$1 [R,L]
+#RewriteCond %{HTTP_HOST} ^www.drivetodaycard.com$ [OR]
+#RewriteCond %{HTTP_HOST} ^drivetodaycard.com$
+#RewriteRule ^(.*)$ https://www.drivetodaycard.com/$1 [R,L]
