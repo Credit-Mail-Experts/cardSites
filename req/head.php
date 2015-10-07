@@ -9,7 +9,7 @@ require "sites/router.php";
 $domain = $_SERVER['SERVER_NAME'];
 
 //used for development. comment out if not in use.
-$domain = "drivetodaycard.com";
+//$domain = "drivetodaycard.com";
 
 //use GET domain if ALLOW_GET_REDIRECT is true and domain is present in the GET request
 if($ALLOW_GET_REDIRECT && $_GET['domain']) {
