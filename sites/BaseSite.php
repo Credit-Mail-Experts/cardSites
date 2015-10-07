@@ -1,11 +1,6 @@
 <?php
 class BaseSite {
 
-    public $database = [
-        'host' => '127.0.0.1',
-        'username' =>''
-    ];
-
     public $html;
     private $elements = [];
 

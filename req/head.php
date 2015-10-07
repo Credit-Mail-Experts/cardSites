@@ -9,7 +9,7 @@ require "sites/router.php";
 $domain = $_SERVER['SERVER_NAME'];
 
 //used for development. comment out if not in use.
-//$domain = "drivenowcard.com";
+$domain = "drivetodaycard.com";
 
 //use GET domain if ALLOW_GET_REDIRECT is true and domain is present in the GET request
 if($ALLOW_GET_REDIRECT && $_GET['domain']) {
@@ -43,8 +43,87 @@ $database->runQuery($query);
 if (isset($_SESSION["employeeId"])) {
     $employeeId = $_SESSION["employeeId"];
 }
-
 ?>
+
+<!-- Javascript Debugging Code - gets excluded when $ALLOW_GET_REDIRECT is false -->
+<?php if($ALLOW_GET_REDIRECT) { ?>
+<script>
+var sites = [
+    'drivenowcard.com',
+    'apcardonline.com',
+    'drivecnac.com',
+    'drivejdb.com',
+    'drivetodaycard.com'
+];
+var timeoutLoop;
+
+function checkForLoopStart() {
+    if(getQueryVariable('loop') === "true") {
+        startLoop();
+    }
+}
+
+function startLoop() {
+    timeoutLoop = setTimeout(function() {
+        loop();
+    }, 5000);
+}
+
+function next() {
+    loop();
+}
+
+function pauseLoop() {
+    clearTimeout(timeoutLoop);
+}
+
+function loop() {
+    var domain = getQueryVariable('domain');
+    var ref = window.location.origin;
+
+    var site = findNextSite(domain);
+    ref = ref + "/?domain=" + site + "&loop=true";
+
+    window.location = ref;
+
+    return true;
+}
+
+function findNextSite(previousSite) {
+    var $trigger = false;
+
+    for(var i = 0; i <= sites.length; i++) {
+        var site = sites[i];
+
+        if(site === previousSite) {
+            $trigger = true;
+            continue;
+        }
+
+        if(i === sites.length) {
+            i = -1;
+        }
+
+        if(site && $trigger) {
+            return site;
+        }
+    }
+}
+
+function getQueryVariable(variable) {
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+
+       return(false);
+}
+
+checkForLoopStart();
+</script>
+<?php } ?>
 
 <!-- style sheet externals -->
 <?php echo $site->html->css; ?>
