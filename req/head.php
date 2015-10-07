@@ -1,9 +1,13 @@
 <?php
+
 require "req/variables.php";
 require "req/functions.php";
 require "sites/router.php";
 
 $domain = $_SERVER['SERVER_NAME'];
+
+//used for development. comment out if not in use.
+//$domain = "drivenowcard.com";
 
 $router = new Router();
 $site = $router->getSite($domain);
@@ -32,6 +36,7 @@ $database->runQuery($query);
 if (isset($_SESSION["employeeId"])) {
     $employeeId = $_SESSION["employeeId"];
 }
+
 ?>
 
 <!-- style sheet externals -->
