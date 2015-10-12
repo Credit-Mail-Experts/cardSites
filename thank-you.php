@@ -38,6 +38,13 @@ ob_start();
             exit;
         }
 
+        // New customer
+        if (!empty($_POST["CustomerNumberTextBox"])) {
+            $customerNumber = $_POST["CustomerNumberTextBox"];
+        } else {
+            $customerNumber = "000000";
+        }
+
         // Grab variables that will be used to cross reference for duplicates
         $email = mysql_real_escape_string(strtolower($_POST["EmailTextBox"]));
         $firstName = upcfirst($_POST["FirstNameTextBox"]);
@@ -97,8 +104,8 @@ ob_start();
         $currentDate = date("Y-m-d");
         $currentTime = date("H:i:s");
 
-        // Execute a query that searches for emails existing in the database (duplicates)
-        $query = "SELECT * FROM leads WHERE email = '$email' ORDER BY date ASC, time ASC";
+        // Execute a query that searches for customer_numbers existing in the database (duplicates)
+        $query = "SELECT * FROM leads WHERE customer_number = '$customerNumber' ORDER BY date ASC, time ASC";
         $result = $database->runQuery($query);
 
         // If a duplicate is found grab all the information from the database
@@ -106,6 +113,7 @@ ob_start();
             while ($row = mysql_fetch_array($result)) {
                 $dbDate = $row["date"];
                 $dbTime = $row["time"];
+                $dbEmail = $row["email"];
                 $dbFirstName = $row["first_name"];
                 $dbMiddleName = $row["middle_name"];
                 $dbLastName = $row["last_name"];
@@ -122,8 +130,58 @@ ob_start();
             $timeDifference = getTimeDifference($dbTime, $currentTime);
 
             // If no input variables changed from our most recent lead in the database then just exit and do nothing
-            if ($currentDate == $dbDate and $timeDifference <= 60 and $firstName == $dbFirstName and $middleName == $dbMiddleName and $lastName == $dbLastName and $homePhone == $dbHomePhone and $workPhone == $dbWorkPhone and $cellPhone == $dbCellPhone and $addressOne == $dbAddressOne and $addressTwo == $dbAddressTwo and $city == $dbCity and $state == $dbState and $zip == $dbZip) {
+            if ($currentDate == $dbDate and $timeDifference <= 60 and $email == $dbEmail and $firstName == $dbFirstName and $middleName == $dbMiddleName and $lastName == $dbLastName and $homePhone == $dbHomePhone and $workPhone == $dbWorkPhone and $cellPhone == $dbCellPhone and $addressOne == $dbAddressOne and $addressTwo == $dbAddressTwo and $city == $dbCity and $state == $dbState and $zip == $dbZip) {
                 exit;
+            } else {
+                $duplicateRecord = TRUE;
+            }
+
+            if ($duplicateRecord) {
+                // Sets variables for duplicate record if records do not match
+
+                if ($email != $dbEmail) {
+                    $dupEmail = $email;
+                }
+
+                if ($firstName != $dbFirstName) {
+                    $dupFirstName = $firstName;
+                }
+
+                if ($lastName != $dbLastName) {
+                    $dupLastName = $lastName;
+                }
+
+                if ($homePhone != $dbHomePhone) {
+                    $dupHomePhone = $homePhone;
+                }
+
+                if ($workPhone != $dbWorkPhone) {
+                    $dupWorkPhone = $workPhone;
+                }
+
+                if ($cellPhone != $dbCellPhone) {
+                    $dupCellPhone = $cellPhone;
+                }
+
+                if ($addressOne != $dbAddressOne) {
+                    $dupAddressOne = $addressOne;
+                }
+
+                if ($addressTwo != $dbAddressTwo) {
+                    $dupAddressTwo = $addressTwo;
+                }
+
+                if ($city != $dbCity) {
+                    $dupCity = $city;
+                }
+
+                if ($state != $dbState) {
+                    $dupState = $state;
+                }
+
+                if ($zip != $dbZip) {
+                    $dupZip = $zip;
+                }
             }
         }
 
@@ -175,13 +233,6 @@ ob_start();
 
         $family = $database->dbPrepare($_POST["FamilyTextBox"]);
         $friend = $database->dbPrepare($_POST["FriendTextBox"]);
-
-        // New customer
-        if (!empty($_POST["CustomerNumberTextBox"])) {
-            $customerNumber = $_POST["CustomerNumberTextBox"];
-        } else {
-            $customerNumber = "000000";
-        }
 
         if ($family == "'family'") {
             $comment = "'Family of Person Mailed'";

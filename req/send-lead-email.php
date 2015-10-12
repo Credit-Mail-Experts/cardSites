@@ -12,14 +12,27 @@ $homePhoneTenDigit = str_replace($phoneReplacementCharacters, "", $homePhone);
 $cellPhoneTenDigit = str_replace($phoneReplacementCharacters, "", $cellPhone);
 $workPhoneTenDigit = str_replace($phoneReplacementCharacters, "", $workPhone);
 
-// Query the database for the proper delivery addresses for the lead
-$query = "SELECT delivery_address, cme_customer_name, delivery_name FROM dealers WHERE dealer_id = $dealerId";
-$result = $database->runQuery($query);
+// if the record is a duplicate with different information
+if ($duplicateRecord && $customerNumber == "123456" && $customerNumber != "12345") {
+    // Query the database for the proper delivery addresses for the lead without CRM addresses
+    $query = "SELECT delivery_address, cme_customer_name, delivery_name FROM dealers WHERE dealer_id = $dealerId AND delivery_name <> 'LBP ADF XML'";
+    $result = $database->runQuery($query);
 
-while ($row = mysql_fetch_array($result)) {
-    $deliveryAddress[] = $row["delivery_address"];
-    $deliveryName[] = $row["delivery_name"];
-    $cmeCustomerName = $row["cme_customer_name"];
+    while ($row = mysql_fetch_array($result)) {
+        $deliveryAddress[] = $row["delivery_address"];
+        $deliveryName[] = "Duplicate Record Email";
+        $cmeCustomerName = $row["cme_customer_name"];
+    }
+} else {
+    // Query the database for the proper delivery addresses for the lead
+    $query = "SELECT delivery_address, cme_customer_name, delivery_name FROM dealers WHERE dealer_id = $dealerId";
+    $result = $database->runQuery($query);
+
+    while ($row = mysql_fetch_array($result)) {
+        $deliveryAddress[] = $row["delivery_address"];
+        $deliveryName[] = $row["delivery_name"];
+        $cmeCustomerName = $row["cme_customer_name"];
+    }
 }
 
 // Query the database for the proper delivery addresses for the lead
@@ -89,9 +102,7 @@ if ($callerId == "Web Lead") {
         $deliveryAddress[] = "bjackson@jcgna.com, jackson@dezmondwright.com";
         $deliveryName[] = "Text Based Email";
     }
-}
- * 
- */
+}*/
 
 // Set the email from and header
 $emailFrom = "deliveryagent@creditmailexperts.com";
@@ -525,6 +536,48 @@ for ($j = 0; $j < count($deliveryAddress); $j++) {
         mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
         // Wheel City XML
     } elseif ($deliveryName[$j] == "Daily Report") {
+
+        // Duplicate Record Email (send if email address is already in database)
+    } elseif ($deliveryName[$j] == "Duplicate Record Email") {
+        $emailSubject = "Lead Detail: Additional Lead Info";
+
+        $emailMessage = "The lead with PIN, $customerNumber, has submitted additional information...\n\n";
+
+        if ($dupFirstName) {
+            $emailMessage .= "First Name: $dupFirstName\n";
+        }
+        if ($dupLastName) {
+            $emailMessage .= "Last Name: $dupLastName\n";
+        }
+        if ($dupEmail) {
+            $emailMessage .= "Email: $dupEmail\n";
+        }
+        if ($dupHomePhone) {
+            $emailMessage .= "Home Phone: $dupHomePhone\n";
+        }
+        if ($dupWorkPhone) {
+            $emailMessage .= "Work Phone: $dupWorkPhone\n";
+        }
+        if ($dupCellPhone) {
+            $emailMessage .= "Cell Phone: $dupCellPhone\n";
+        }
+        if ($dupAddressOne) {
+            $emailMessage .= "Address One: $dupAddressOne\n";
+        }
+        if ($dupAddressTwo) {
+            $emailMessage .= "Address Two: $dupAddressTwo\n";
+        }
+        if ($dupCity) {
+            $emailMessage .= "City: $dupCity\n";
+        }
+        if ($dupState) {
+            $emailMessage .= "State: $dupState\n";
+        }
+        if ($dupZip) {
+            $emailMessage .= "Zip: $dupZip\n";
+        }
+
+        mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
 
     } else {
         $emailMessage = "<?xml version=\"1.0\"?>\n"
