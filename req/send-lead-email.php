@@ -539,9 +539,15 @@ for ($j = 0; $j < count($deliveryAddress); $j++) {
 
         // Duplicate Record Email (send if email address is already in database)
     } elseif ($deliveryName[$j] == "Duplicate Record Email") {
-        $emailSubject = "Lead Detail: Additional Lead Info";
+        $emailSubject = "CME Duplicate Lead Alert – Card Number $customerNumber";
 
-        $emailMessage = "The lead with PIN, $customerNumber, has submitted additional information...\n\n";
+        $emailMessage = "The lead with card number, $customerNumber, ";
+
+        if ($dupFirstName || $dupLastName || $dupEmail || $dupHomePhone || $dupWorkPhone || $dupCellPhone || $dupAddressOne || $dupAddressTwo || $dupCity || $dupState || $dupZip) {
+            $emailMessage .= "has submitted additional information...\n\n";
+        } else {
+            $emailMessage .= "has activated their card again.  This may be an indication that they are still waiting to hear from you.\n\n";
+        }
 
         if ($dupFirstName) {
             $emailMessage .= "First Name: $dupFirstName\n";
