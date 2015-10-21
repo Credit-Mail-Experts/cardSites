@@ -229,7 +229,36 @@ for ($j = 0; $j < count($deliveryAddress); $j++) {
 
         mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
 
-        // ADF format
+        // Differentiated Subject Text Lead
+    } else if ($deliveryName[$j] == "Text Diff Subject") {
+
+        $emailSubject = "Lead Detail: $cmeCustomerName - $mailType $currentDate $currentTime";
+
+        $emailMessage = "Customer Number = $dealerId\n"
+                . "Last Name = $lastName\n"
+                . "First Name = $firstName\n"
+                . "Middle Name = $middleName\n"
+                . "Address = $addressOne\n"
+                . "Address2 = $addressTwo\n"
+                . "City = $city\n"
+                . "State = $state\n"
+                . "Zip Code = $zip\n"
+                . "Home Phone = $homePhone\n"
+                . "Mobile Phone = $cellPhone\n"
+                . "Email = $email\n"
+                . "Work Phone = $workPhone\n"
+                . "Pin Code = $customerNumber\n"
+                . "Mail Type = $mailType\n"
+                . "Comment = $comment\n"
+                . "Caller ID = $callerId\n"
+                . "Appointment Date/Time = $appointmentDate $appointmentTime\n"
+                . "Appointment Refusal Reason = $appointmentRefusalReason\n"
+                . "Advertising Source = $sourceType\n"
+                . "Warm Transfer = $warmTransfer\n";
+
+        mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
+
+        // JD Byrider BDC text email
     } else if ($deliveryName[$j] == "JDB BDC") {
 
         $emailMessage = "Lead ID:L-00000\n"
