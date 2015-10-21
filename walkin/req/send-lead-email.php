@@ -12,27 +12,14 @@ $homePhoneTenDigit = str_replace($phoneReplacementCharacters, "", $homePhone);
 $cellPhoneTenDigit = str_replace($phoneReplacementCharacters, "", $cellPhone);
 $workPhoneTenDigit = str_replace($phoneReplacementCharacters, "", $workPhone);
 
-// if the record is a duplicate with different information
-if ($duplicateRecord && $customerNumber == "123456" && $customerNumber != "12345") {
-    // Query the database for the proper delivery addresses for the lead without CRM addresses
-    $query = "SELECT delivery_address, cme_customer_name, delivery_name FROM dealers WHERE dealer_id = $dealerId AND delivery_name <> 'LBP ADF XML'";
-    $result = $database->runQuery($query);
+// Query the database for the proper delivery addresses for the lead
+$query = "SELECT delivery_address, cme_customer_name, delivery_name FROM dealers WHERE dealer_id = $dealerId";
+$result = $database->runQuery($query);
 
-    while ($row = mysql_fetch_array($result)) {
-        $deliveryAddress[] = $row["delivery_address"];
-        $deliveryName[] = "Duplicate Record Email";
-        $cmeCustomerName = $row["cme_customer_name"];
-    }
-} else {
-    // Query the database for the proper delivery addresses for the lead
-    $query = "SELECT delivery_address, cme_customer_name, delivery_name FROM dealers WHERE dealer_id = $dealerId";
-    $result = $database->runQuery($query);
-
-    while ($row = mysql_fetch_array($result)) {
-        $deliveryAddress[] = $row["delivery_address"];
-        $deliveryName[] = $row["delivery_name"];
-        $cmeCustomerName = $row["cme_customer_name"];
-    }
+while ($row = mysql_fetch_array($result)) {
+    $deliveryAddress[] = $row["delivery_address"];
+    $deliveryName[] = $row["delivery_name"];
+    $cmeCustomerName = $row["cme_customer_name"];
 }
 
 // Query the database for the proper delivery addresses for the lead
@@ -102,7 +89,9 @@ if ($callerId == "Web Lead") {
         $deliveryAddress[] = "bjackson@jcgna.com, jackson@dezmondwright.com";
         $deliveryName[] = "Text Based Email";
     }
-}*/
+}
+ * 
+ */
 
 // Set the email from and header
 $emailFrom = "deliveryagent@creditmailexperts.com";
@@ -229,36 +218,7 @@ for ($j = 0; $j < count($deliveryAddress); $j++) {
 
         mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
 
-        // Differentiated Subject Text Lead
-    } else if ($deliveryName[$j] == "Text Diff Subject") {
-
-        $emailSubject = "Lead Detail: $cmeCustomerName - $mailType $currentDate $currentTime";
-
-        $emailMessage = "Customer Number = $dealerId\n"
-                . "Last Name = $lastName\n"
-                . "First Name = $firstName\n"
-                . "Middle Name = $middleName\n"
-                . "Address = $addressOne\n"
-                . "Address2 = $addressTwo\n"
-                . "City = $city\n"
-                . "State = $state\n"
-                . "Zip Code = $zip\n"
-                . "Home Phone = $homePhone\n"
-                . "Mobile Phone = $cellPhone\n"
-                . "Email = $email\n"
-                . "Work Phone = $workPhone\n"
-                . "Pin Code = $customerNumber\n"
-                . "Mail Type = $mailType\n"
-                . "Comment = $comment\n"
-                . "Caller ID = $callerId\n"
-                . "Appointment Date/Time = $appointmentDate $appointmentTime\n"
-                . "Appointment Refusal Reason = $appointmentRefusalReason\n"
-                . "Advertising Source = $sourceType\n"
-                . "Warm Transfer = $warmTransfer\n";
-
-        mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
-
-        // JD Byrider BDC text email
+        // ADF format
     } else if ($deliveryName[$j] == "JDB BDC") {
 
         $emailMessage = "Lead ID:L-00000\n"
@@ -565,138 +525,6 @@ for ($j = 0; $j < count($deliveryAddress); $j++) {
         mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
         // Wheel City XML
     } elseif ($deliveryName[$j] == "Daily Report") {
-
-        // CRM Email setup without sending an email (Paul's request)
-    } elseif ($deliveryName[$j] == "ADF XML Minus Email") {
-        $emailMessage = "<?xml version=\"1.0\"?>\n"
-                . "<?ADF version=\"1.0\"?>\n"
-                . "<adf>\n"
-                . "<prospect>\n"
-                . "<id sequence=\"00002\" source=\"CME LBP\"></id>\n"
-                . "<vehicle interest=\"buy\" status=\"used\">\n"
-                . "<year />\n"
-                . "<make />\n"
-                . "<model />\n"
-                . "</vehicle>\n"
-                . "<customer>\n"
-                . "<contact>\n"
-                . "<name part=\"first\">$firstName</name>\n"
-                . "<name part=\"last\">$lastName</name>\n"
-                . "<email></email>\n"
-                . "<phone type=\"voice\" time=\"day\">$cellPhone</phone>\n"
-                . "<phone type=\"voice\" time=\"evening\">$homePhone</phone>\n"
-                . "<address>\n"
-                . "<street line=\"1\">$addressOne</street>\n"
-                . "<city>$city</city>\n"
-                . "<regioncode>$state</regioncode>\n"
-                . "<postalcode>$zip</postalcode>\n"
-                . "<country>US</country>\n"
-                . "</address>\n"
-                . "</contact>\n"
-                . "<comments>\n"
-                . "ANI/Called From Number:$callerId;\n"
-                . "Appointment:$appointmentDate $appointmentTime;\n"
-                . "Pin #:$customerNumber;\n"
-                . "Refusal Reason #:$appointmentRefusalReason;\n"
-                . "Mail Type:$mailType;\n"
-                . "Years on Job:;\n"
-                . "Months on Job:;\n"
-                . "Work Phone:$workPhone;\n"
-                . "Monthly Gross:;\n"
-                . "Credit Check:;\n"
-                . "DOB:;\n"
-                . "Rent/Own:;\n"
-                . "Housing Payment:\n"
-                . "Years at Residence:;\n"
-                . "Months at Residence:;\n"
-                . "</comments>\n"
-                . "</customer>\n"
-                . "<vendor>\n"
-                . "<vendorname>$cmeCustomerName - $mailTypeFull</vendorname>\n"
-                . "<contact primarycontact=\"1\">\n"
-                . "<name part=\"full\">CME Lead</name>\n"
-                . "<phone type=\"voice\" time=\"morning\" />\n"
-                . "<address>\n"
-                . "<street line=\"1\"></street>\n"
-                . "<city />\n"
-                . "<regioncode />\n"
-                . "<postalcode />\n"
-                . "<country>US</country>\n"
-                . "<url />\n"
-                . "</address>\n"
-                . "</contact>\n"
-                . "</vendor>\n"
-                . "<provider>\n"
-                . "<name part=\"full\">$cmeCustomerName</name>\n"
-                . "<service>$mailTypeFull</service>\n"
-                . "<url>http://www.creditmailexperts.com</url>\n"
-                . "<email>todd@creditmailexperts.com</email>\n"
-                . "<phone>269-488-9925</phone>\n"
-                . "<contact primary=\"1\">\n"
-                . "<name part=\"full\">Todd Urbanowicz</name>\n"
-                . "<email></email>\n"
-                . "<phone type=\"voice\" time=\"day\"></phone>\n"
-                . "<address>\n"
-                . "<street line=\"1\"></street>\n"
-                . "<city />\n"
-                . "<regioncode>MI</regioncode>\n"
-                . "<postalcode />\n"
-                . "<country>US</country>\n"
-                . "</address>\n"
-                . "</contact>\n"
-                . "</provider>\n"
-                . "</prospect>\n"
-                . "</adf>\n";
-
-        mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
-
-        // Duplicate Record Email (send if email address is already in database)
-    } elseif ($deliveryName[$j] == "Duplicate Record Email") {
-        $emailSubject = "CME Duplicate Lead Alert – Card Number $customerNumber";
-
-        $emailMessage = "The lead with card number, $customerNumber, ";
-
-        if ($dupFirstName || $dupLastName || $dupEmail || $dupHomePhone || $dupWorkPhone || $dupCellPhone || $dupAddressOne || $dupAddressTwo || $dupCity || $dupState || $dupZip) {
-            $emailMessage .= "has submitted additional information...\n\n";
-        } else {
-            $emailMessage .= "has activated their card again.  This may be an indication that they are still waiting to hear from you.\n\n";
-        }
-
-        if ($dupFirstName) {
-            $emailMessage .= "First Name: $dupFirstName\n";
-        }
-        if ($dupLastName) {
-            $emailMessage .= "Last Name: $dupLastName\n";
-        }
-        if ($dupEmail) {
-            $emailMessage .= "Email: $dupEmail\n";
-        }
-        if ($dupHomePhone) {
-            $emailMessage .= "Home Phone: $dupHomePhone\n";
-        }
-        if ($dupWorkPhone) {
-            $emailMessage .= "Work Phone: $dupWorkPhone\n";
-        }
-        if ($dupCellPhone) {
-            $emailMessage .= "Cell Phone: $dupCellPhone\n";
-        }
-        if ($dupAddressOne) {
-            $emailMessage .= "Address One: $dupAddressOne\n";
-        }
-        if ($dupAddressTwo) {
-            $emailMessage .= "Address Two: $dupAddressTwo\n";
-        }
-        if ($dupCity) {
-            $emailMessage .= "City: $dupCity\n";
-        }
-        if ($dupState) {
-            $emailMessage .= "State: $dupState\n";
-        }
-        if ($dupZip) {
-            $emailMessage .= "Zip: $dupZip\n";
-        }
-
-        mail($emailTo, $emailSubject, $emailMessage, $emailHeader, $emailReturnPath);
 
     } else {
         $emailMessage = "<?xml version=\"1.0\"?>\n"
