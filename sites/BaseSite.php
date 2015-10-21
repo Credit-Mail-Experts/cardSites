@@ -1,4 +1,5 @@
 <?php
+
 class BaseSite {
 
     public $html;
@@ -32,7 +33,7 @@ class BaseSite {
 
     // function to check domain name to domain given
     public function matches($domain) {
-        return ($this->domain === $domain);
+        return ($this->domain === $domain || strtolower($this->fullURL) === $domain);
     }
 
     // store html element information in  this->elements
